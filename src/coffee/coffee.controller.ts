@@ -1,13 +1,13 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Post, Query, Res } from "@nestjs/common";
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, Param, Patch, Post, Query, Res } from "@nestjs/common";
 import { CoffeeService } from "./coffee.service";
-import { Coffee } from "./coffee.entity";
 import { CreateCoffeeDto } from "./dto/create-coffee.dto";
+import { UpdateCoffeeDto } from "./dto/update-coffee.dto";
 
 @Controller("coffee")
 export class CoffeeController {
   constructor(private readonly coffeService: CoffeeService){}
   @Get(":id")
-  logCoffe(@Param('id') id:number) {
+  logCoffe(@Param('id') id:string) {
    const coffee =  this.coffeService.findOne(id)
    if(!coffee){
      throw new HttpException(`Coffee id ${id} not found`,HttpStatus.NOT_FOUND)
@@ -23,14 +23,14 @@ export class CoffeeController {
 //   const {offset,limit} =pagination
 //   return `this is the offset ${offset} and the limit ${limit}`
 // }
+@Patch(":id")
+updateCoffe(@Param('id') id: string,@Body() UpdateCoffeeDto:UpdateCoffeeDto){
+return this.coffeService.update(id,UpdateCoffeeDto)
+}
 @Get()
 giveAll(){
   return this.coffeService.findAll()
 }
-//   @Get()
-//   imCoffee(){
-// return "HI kari"
-//   }
   @Post()
   // @HttpCode(HttpStatus.GONE)
   create(@Body() createateCoffeDto: CreateCoffeeDto){

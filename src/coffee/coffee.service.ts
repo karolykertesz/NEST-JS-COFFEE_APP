@@ -1,34 +1,41 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { Coffee } from './coffee.entity';
+import { UpdateCoffeeDto } from './dto/update-coffee.dto';
 @Injectable()
 export class CoffeeService {
-  private coffes: Coffee[] = [{
-    id:1,
-    location: "Brazil",
-    flavours:["vanilla,chocko"],
-    name: "Starbucks"
-  
-  }]
-  findAll(){
-    return this.coffes;
+  constructor(@InjectRepository(Coffee) private coffes: Repository<Coffee>){}
+   findAll(){
+return this.coffes.find({
+  relations: ["flavours"]
+})
   }
-  findOne(id:number){
-    const returnedCoffe = this.coffes.find((cof)=> cof.id === id);
-    return returnedCoffe;
-
-  }
-  create(coffeItem){
-    this.coffes.push(coffeItem)
-    return coffeItem;
-  }
-  delete(id:number){
-const indexedItem = this.coffes.findIndex((item)=> item.id === id);
-if(indexedItem >= 0){
-this.coffes.splice(indexedItem,1)
+  async findOne(id:string){
+const coffee = await this.coffes.findOne({id: +id},{relations: ["flavours"]})
+if(!coffee){
+  return new NotFoundException(`with the ${id} no coffee found`)
 }
+return coffee
   }
-  update(id,itemObject){
+  create(CreateCoffeeDto: any){
+    const coffee = this.coffes.create(CreateCoffeeDto)
+    return this.coffes.save(coffee)
+  }
+  async delete(id:number){
+    const coffee = await this.coffes.findOne(id)
+    return this.coffes.remove(coffee)
 
+}
 
+  async update(id: string,UpdateCoffeeDto:UpdateCoffeeDto){
+const coffee = await this.coffes.preload({
+  id: +id,
+  ...UpdateCoffeeDto
+})
+if(!coffee){
+  throw new NotFoundException(`No coffee on id ${id}`)
+}
+return this.coffes.save(coffee)
   }
 }
