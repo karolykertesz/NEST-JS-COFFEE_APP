@@ -1,4 +1,3 @@
-import { type } from "os";
 import {
   Column,
   Entity,
@@ -12,8 +11,13 @@ import { Flavour } from "./flavour.entity";
 export class Coffee {
   @PrimaryGeneratedColumn()
   id: number;
+
   @Column()
   name: string;
+
+  @Column({ default: 0 })
+  recommendations: number;
+
   @JoinTable()
   @ManyToMany((type) => Flavour, (flavor) => flavor.coffees, { cascade: true })
   flavours: Flavour[];
