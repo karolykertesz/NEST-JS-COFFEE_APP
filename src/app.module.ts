@@ -5,6 +5,7 @@ import { CoffeeController } from "./coffee/coffee.controller";
 import { CoffeeService } from './coffee/coffee.service';
 import { CoffeeModule } from './coffee/coffee.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CoffeeRatingModule } from './coffee-rating/coffee-rating.module';
 
 @Module({
   imports: [CoffeeModule,TypeOrmModule.forRoot({
@@ -16,7 +17,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     username: "postgres",
     password: "pass123",
     database: "postgres"
-  })],
+  }), CoffeeRatingModule],
   controllers: [AppController],
   providers: [AppService]
 })
