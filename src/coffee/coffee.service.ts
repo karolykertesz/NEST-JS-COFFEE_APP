@@ -1,4 +1,5 @@
-import { Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { Inject, Injectable, NotFoundException, Scope } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PaginationDTO } from "src/common/dto/paginationDTO";
 import { COFFEE_BRANDS } from "src/contansts/coffee.contant.ts";
@@ -12,9 +13,12 @@ export class CoffeeService {
     @InjectRepository(Coffee) private coffes: Repository<Coffee>,
     @InjectRepository(Flavour) private flavors: Repository<Flavour>,
     private readonly connection: Connection,
-    @Inject(COFFEE_BRANDS) brands: string[]
+    @Inject(COFFEE_BRANDS) brands: string[],
+    private readonly configService:ConfigService
+
   ) {
-    console.log(brands)
+const dbHost = this.configService.get<string>('DATABASE_PASSWORD')
+console.log(dbHost)
   }
   findAll(paginationQury: PaginationDTO) {
     const { limit, offset } = paginationQury;
